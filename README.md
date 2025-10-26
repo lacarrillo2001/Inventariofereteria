@@ -13,7 +13,13 @@ Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design -Version 9.0.0
 Install-Package Npgsql -Version 9.0.4
 Install-Package Npgsql.EntityFrameworkCore.PostgreSQL -Version 9.0.4
 
+
+//Nombre de la base de datos
+
+Inventario_Ferreteria
+
 //Desinstalar paquete de SQL Server
+
 
 Uninstall-Package Microsoft.EntityFrameworkCore.SqlServer -ProjectName TuProyecto -RemoveDependencies
 
