@@ -10,8 +10,8 @@ using WebApp.Infra.Services; // IErrorLogger
 
 namespace WebApp.Controllers
 {
-    
-    
+
+
     [Authorize]
     public class ArticuloController : Controller
     {
@@ -26,7 +26,7 @@ namespace WebApp.Controllers
             _logger = logger;
         }
 
-        
+
 
         // GET: Articulos
         public async Task<IActionResult> Index(string? q, int page = 1)
@@ -59,7 +59,7 @@ namespace WebApp.Controllers
             ViewBag.Page = page;
             ViewBag.PageSize = PageSize;
             ViewBag.Query = q;
-            
+
 
             return View(items);
         }
@@ -82,6 +82,8 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Create()
         {
             await CargarCombosAsync();
+
+
             return View();
         }
 
@@ -102,12 +104,18 @@ namespace WebApp.Controllers
                 return View(articulo);
             }
 
-            // Activo ya es true por default
-            _db.Add(articulo);
+            var ahora = DateTime.UtcNow; // o DateTime.Now si usas hora local
+            articulo.CreatedAt = ahora;  // SOLO aquí se fija
+            articulo.UpdatedAt = ahora;  // inicial = creado
+            articulo.Activo = true;      // por si acaso
+
+            _db.Articulos.Add(articulo);
             await _db.SaveChangesAsync();
+
             TempData["ok"] = "Artículo creado.";
             return RedirectToAction(nameof(Index));
         }
+
 
 
 
@@ -128,7 +136,7 @@ namespace WebApp.Controllers
         {
             if (id != articulo.Id) return NotFound();
 
-            // Evitar validación de navegaciones si no usaste [ValidateNever] en el modelo
+            // Evitar validación de navegaciones
             ModelState.Remove(nameof(Articulo.Categoria));
             ModelState.Remove(nameof(Articulo.Proveedor));
 
@@ -142,9 +150,29 @@ namespace WebApp.Controllers
                 return View(articulo);
             }
 
+            var entity = await _db.Articulos.FirstOrDefaultAsync(a => a.Id == id);
+            if (entity is null) return NotFound();
+
             try
             {
-                _db.Update(articulo);
+                // ✅ Copia SOLO los campos que SÍ son editables
+                entity.Codigo = articulo.Codigo;
+                entity.CodigoBarras = articulo.CodigoBarras;
+                entity.Nombre = articulo.Nombre;
+                entity.PrecioCompra = articulo.PrecioCompra;
+                entity.PrecioVenta = articulo.PrecioVenta;
+                entity.StockActual = articulo.StockActual;
+                entity.StockMinimo = articulo.StockMinimo;
+                entity.CategoriaId = articulo.CategoriaId;
+                entity.ProveedorId = articulo.ProveedorId;
+                entity.Activo = articulo.Activo;
+
+                // ✅ Sellar UpdatedAt SIEMPRE en servidor
+                entity.UpdatedAt = DateTime.UtcNow;
+
+                // ✅ Blindaje extra: CreatedAt nunca debe marcarse como modificado
+                _db.Entry(entity).Property(x => x.CreatedAt).IsModified = false;
+
                 await _db.SaveChangesAsync();
                 TempData["ok"] = "Artículo actualizado.";
                 return RedirectToAction(nameof(Index));
@@ -156,6 +184,7 @@ namespace WebApp.Controllers
                 return View(articulo);
             }
         }
+
 
 
         // GET: Articulos/Delete/5
@@ -264,22 +293,22 @@ namespace WebApp.Controllers
         }
 
         // POST: Articulos/Activar/5   (atajo para activar)
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Activar(long id, int page = 1, string? q = null)
-{
-    var ent = await _db.Articulos
-        .IgnoreQueryFilters()
-        .FirstOrDefaultAsync(x => x.Id == id);
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activar(long id, int page = 1, string? q = null)
+        {
+            var ent = await _db.Articulos
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-    if (ent is null) return NotFound();
+            if (ent is null) return NotFound();
 
-    ent.Activo = true;
-    await _db.SaveChangesAsync();
+            ent.Activo = true;
+            await _db.SaveChangesAsync();
 
-    TempData["ok"] = $"Artículo '{ent.Nombre}' activado.";
-    return RedirectToAction(nameof(Inactivos), new { page, q });
-}
+            TempData["ok"] = $"Artículo '{ent.Nombre}' activado.";
+            return RedirectToAction(nameof(Inactivos), new { page, q });
+        }
 
 
     }

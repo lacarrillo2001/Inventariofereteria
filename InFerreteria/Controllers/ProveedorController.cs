@@ -14,28 +14,24 @@ namespace WebApp.Controllers
 
         public ProveedorController(ApplicationDbContext db) => _db = db;
 
-        public async Task<IActionResult> Index(string? q, bool verInactivos = false, int page = 1)
+        // GET: Proveedores (solo activos)
+        public async Task<IActionResult> Index(string? q, int page = 1)
         {
-            var qry = _db.Proveedores.AsQueryable();
-
-            if (verInactivos) // 👈 para traer también los desactivados
-                qry = qry.IgnoreQueryFilters();
+            const int PageSize = 10;
+            var qry = _db.Proveedores
+                .IgnoreQueryFilters()
+                .Where(p => p.Activo);
 
             if (!string.IsNullOrWhiteSpace(q))
                 qry = qry.Where(x => x.Nombre.Contains(q) || (x.Ruc != null && x.Ruc.Contains(q)));
 
             var total = await qry.CountAsync();
-            var items = await qry
-                .OrderBy(x => x.Nombre)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
-                .ToListAsync();
+            var items = await qry.OrderBy(x => x.Nombre)
+                                 .Skip((page - 1) * PageSize)
+                                 .Take(PageSize)
+                                 .ToListAsync();
 
-            ViewBag.Total = total;
-            ViewBag.Page = page;
-            ViewBag.PageSize = PageSize;
-            ViewBag.Query = q;
-            ViewBag.VerInactivos = verInactivos;
+            ViewBag.Total = total; ViewBag.Page = page; ViewBag.PageSize = PageSize; ViewBag.Query = q;
             return View(items);
         }
 
@@ -107,8 +103,45 @@ namespace WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
+        // GET: Proveedores/Inactivos
+        public async Task<IActionResult> Inactivos(string? q, int page = 1)
+        {
+            const int PageSize = 10;
+            var qry = _db.Proveedores
+                .IgnoreQueryFilters()
+                .Where(x => !x.Activo);
+
+            if (!string.IsNullOrWhiteSpace(q))
+                qry = qry.Where(x => x.Nombre.Contains(q) || (x.Ruc != null && x.Ruc.Contains(q)));
+
+            var total = await qry.CountAsync();
+            var items = await qry.OrderBy(x => x.Nombre)
+                                 .Skip((page - 1) * PageSize)
+                                 .Take(PageSize)
+                                 .ToListAsync();
+
+            ViewBag.Total = total; ViewBag.Page = page; ViewBag.PageSize = PageSize; ViewBag.Query = q;
+            return View(items); // Views/Proveedores/Inactivos.cshtml
+        }
+
+        // POST: Proveedores/Activar/5
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleActivo(long id, int page = 1, string? q = null, bool verInactivos = false)
+        public async Task<IActionResult> Activar(long id, int page = 1, string? q = null)
+        {
+            var ent = await _db.Proveedores.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
+            if (ent is null) return NotFound();
+
+            ent.Activo = true;
+            await _db.SaveChangesAsync();
+            TempData["ok"] = "Proveedor activado.";
+            return RedirectToAction(nameof(Inactivos), new { page, q });
+        }
+
+        // POST: Proveedores/ToggleActivo/5
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleActivo(long id, int page = 1, string? q = null)
         {
             var ent = await _db.Proveedores.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
             if (ent is null) return NotFound();
@@ -116,8 +149,9 @@ namespace WebApp.Controllers
             ent.Activo = !ent.Activo;
             await _db.SaveChangesAsync();
             TempData["ok"] = ent.Activo ? "Proveedor activado." : "Proveedor desactivado.";
-            return RedirectToAction(nameof(Index), new { page, q, verInactivos });
+            return RedirectToAction(nameof(Index), new { page, q });
         }
+
 
     }
 }

@@ -14,26 +14,24 @@ namespace WebApp.Controllers
 
         public CategoriaController(ApplicationDbContext db) => _db = db;
 
-        // GET: Categorias
-        public async Task<IActionResult> Index(string? q, bool verInactivos = false, int page = 1)
+        // GET: Categorias (solo activos)
+        public async Task<IActionResult> Index(string? q, int page = 1)
         {
-            var qry = _db.Categorias.AsQueryable();
-            if (verInactivos) qry = qry.IgnoreQueryFilters();
+            const int PageSize = 10;
+            var qry = _db.Categorias
+                .IgnoreQueryFilters()     // desactiva filtros globales
+                .Where(c => c.Activo);    // re-aplica filtro SOLO a Categoría
+
             if (!string.IsNullOrWhiteSpace(q))
                 qry = qry.Where(x => x.Nombre.Contains(q));
 
             var total = await qry.CountAsync();
-            var items = await qry
-                .OrderBy(x => x.Nombre)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize)
-                .ToListAsync();
+            var items = await qry.OrderBy(x => x.Nombre)
+                                 .Skip((page - 1) * PageSize)
+                                 .Take(PageSize)
+                                 .ToListAsync();
 
-            ViewBag.Total = total;
-            ViewBag.Page = page;
-            ViewBag.PageSize = PageSize;
-            ViewBag.Query = q;
-            ViewBag.VerInactivos = verInactivos;
+            ViewBag.Total = total; ViewBag.Page = page; ViewBag.PageSize = PageSize; ViewBag.Query = q;
             return View(items);
         }
 
@@ -136,8 +134,43 @@ namespace WebApp.Controllers
                 || ex.Message.Contains("duplicate key");
         }
 
+        // GET: Categorias/Inactivos
+        public async Task<IActionResult> Inactivos(string? q, int page = 1)
+        {
+            const int PageSize = 10;
+            var qry = _db.Categorias
+                .IgnoreQueryFilters()
+                .Where(x => !x.Activo);
+
+            if (!string.IsNullOrWhiteSpace(q))
+                qry = qry.Where(x => x.Nombre.Contains(q));
+
+            var total = await qry.CountAsync();
+            var items = await qry.OrderBy(x => x.Nombre)
+                                 .Skip((page - 1) * PageSize)
+                                 .Take(PageSize)
+                                 .ToListAsync();
+
+            ViewBag.Total = total; ViewBag.Page = page; ViewBag.PageSize = PageSize; ViewBag.Query = q;
+            return View(items); // Views/Categorias/Inactivos.cshtml
+        }
+
+        // POST: Categorias/Activar/5  (desde Inactivos)
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleActivo(long id, int page = 1, string? q = null, bool verInactivos = false)
+        public async Task<IActionResult> Activar(long id, int page = 1, string? q = null)
+        {
+            var ent = await _db.Categorias.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
+            if (ent is null) return NotFound();
+
+            ent.Activo = true;
+            await _db.SaveChangesAsync();
+            TempData["ok"] = "Categoría activada.";
+            return RedirectToAction(nameof(Inactivos), new { page, q });
+        }
+
+        // POST: Categorias/ToggleActivo/5 (desde Index)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleActivo(long id, int page = 1, string? q = null)
         {
             var ent = await _db.Categorias.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
             if (ent is null) return NotFound();
@@ -145,8 +178,10 @@ namespace WebApp.Controllers
             ent.Activo = !ent.Activo;
             await _db.SaveChangesAsync();
             TempData["ok"] = ent.Activo ? "Categoría activada." : "Categoría desactivada.";
-            return RedirectToAction(nameof(Index), new { page, q, verInactivos });
+            return RedirectToAction(nameof(Index), new { page, q });
         }
+
+
 
     }
 }
