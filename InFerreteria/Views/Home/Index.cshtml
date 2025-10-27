@@ -1,8 +1,271 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
+    var isAuth = User?.Identity?.IsAuthenticated == true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .hero {
+        background: linear-gradient(135deg, #034383 0%, #0b67b3 100%);
+        color: #fff;
+        border-radius: 1rem;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 10px 25px rgba(3, 67, 131, .25);
+    }
+
+        .hero h1 {
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+    .card-soft {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,.06);
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+    }
+
+        .stat .badge-emoji {
+            font-size: 1.6rem;
+            margin-right: .75rem;
+            line-height: 1;
+        }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: .9rem;
+    }
+
+    .shortcut .btn {
+        min-width: 180px;
+    }
+
+    .list-compact li {
+        margin-bottom: .35rem;
+    }
+
+    /* Hover sutil en tarjetas */
+    .card-soft:hover {
+        transform: translateY(-2px);
+        transition: transform .15s ease;
+    }
+</style>
+
+<div class="container my-4">
+
+    <!-- HERO -->
+    <div class="hero mb-4">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+            <div class="mb-3 mb-md-0">
+                <h1 class="mb-2">Inventario de Ferretería</h1>
+                <p class="mb-0">Plataforma colaborativa para gestionar artículos, categorías y proveedores.</p>
+            </div>
+
+            <div class="shortcut text-nowrap">
+                @if (isAuth)
+                {
+                    <a asp-controller="Articulo" asp-action="Create" class="btn btn-light mr-2 mb-2" aria-label="Crear nuevo artículo">➕ Nuevo artículo</a>
+                    <a asp-controller="Articulo" asp-action="Index" class="btn btn-outline-light mb-2" aria-label="Ver inventario">📦 Ver inventario</a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-light mr-2 mb-2">Iniciar sesión</a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light mb-2">Crear cuenta</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (isAuth)
+    {
+        <!-- MÉTRICAS (solo si existen) -->
+        @if (ViewBag.ArticulosActivos != null || ViewBag.ArticulosInactivos != null || ViewBag.Categorias != null || ViewBag.Proveedores != null)
+        {
+            <div class="row">
+                @if (ViewBag.ArticulosActivos != null)
+                {
+                    <div class="col-sm-6 col-lg-3 mb-4">
+                        <div class="card card-soft h-100">
+                            <div class="card-body">
+                                <div class="stat">
+                                    <span class="badge-emoji">✅</span>
+                                    <div>
+                                        <div class="stat-value">@ViewBag.ArticulosActivos</div>
+                                        <div class="stat-label">Artículos activos</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a asp-controller="Articulo" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver lista</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.ArticulosInactivos != null)
+                {
+                    <div class="col-sm-6 col-lg-3 mb-4">
+                        <div class="card card-soft h-100">
+                            <div class="card-body">
+                                <div class="stat">
+                                    <span class="badge-emoji">⏸️</span>
+                                    <div>
+                                        <div class="stat-value">@ViewBag.ArticulosInactivos</div>
+                                        <div class="stat-label">Artículos inactivos</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-sm btn-outline-secondary">Revisar inactivos</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.Categorias != null)
+                {
+                    <div class="col-sm-6 col-lg-3 mb-4">
+                        <div class="card card-soft h-100">
+                            <div class="card-body">
+                                <div class="stat">
+                                    <span class="badge-emoji">🏷️</span>
+                                    <div>
+                                        <div class="stat-value">@ViewBag.Categorias</div>
+                                        <div class="stat-label">Categorías</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a asp-controller="Categoria" asp-action="Index" class="btn btn-sm btn-outline-info">Gestionar categorías</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (ViewBag.Proveedores != null)
+                {
+                    <div class="col-sm-6 col-lg-3 mb-4">
+                        <div class="card card-soft h-100">
+                            <div class="card-body">
+                                <div class="stat">
+                                    <span class="badge-emoji">👥</span>
+                                    <div>
+                                        <div class="stat-value">@ViewBag.Proveedores</div>
+                                        <div class="stat-label">Proveedores</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <a asp-controller="Proveedor" asp-action="Index" class="btn btn-sm btn-outline-success">Ver proveedores</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- ACCIONES RÁPIDAS (globales) -->
+        <div class="card card-soft mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Acciones rápidas</h5>
+                <div class="d-flex flex-wrap">
+                    <a asp-controller="Articulo" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Artículos</a>
+                    <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-outline-secondary mr-2 mb-2">Artículos inactivos</a>
+                    <a asp-controller="Categoria" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Categorías</a>
+                    <a asp-controller="Proveedor" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Proveedores</a>
+                    <a asp-controller="Categoria" asp-action="Create" class="btn btn-outline-info mr-2 mb-2">➕ Nueva categoría</a>
+                    <a asp-controller="Proveedor" asp-action="Create" class="btn btn-outline-success mr-2 mb-2">➕ Nuevo proveedor</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- GESTIÓN POR ENTIDAD -->
+        <div class="row">
+            <!-- Artículos -->
+            <div class="col-lg-4 mb-4">
+                <div class="card card-soft h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Artículos</h5>
+                        <p class="mb-3 text-muted">Registro, edición, búsqueda y control de stock mínimo.</p>
+                        <div class="d-flex flex-wrap">
+                            <a asp-controller="Articulo" asp-action="Create" class="btn btn-primary mr-2 mb-2">➕ Nuevo artículo</a>
+                            <a asp-controller="Articulo" asp-action="Index" class="btn btn-outline-primary mr-2 mb-2">📦 Ver inventario</a>
+                            <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-outline-secondary mb-2">⏸️ Inactivos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías -->
+            <div class="col-lg-4 mb-4">
+                <div class="card card-soft h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Categorías</h5>
+                        <p class="mb-3 text-muted">Clasifica tus artículos y organiza el catálogo.</p>
+                        <div class="d-flex flex-wrap">
+                            <a asp-controller="Categoria" asp-action="Create" class="btn btn-info mr-2 mb-2">➕ Nueva categoría</a>
+                            <a asp-controller="Categoria" asp-action="Index" class="btn btn-outline-info mb-2">📚 Ver categorías</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proveedores -->
+            <div class="col-lg-4 mb-4">
+                <div class="card card-soft h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Proveedores</h5>
+                        <p class="mb-3 text-muted">Administra tus proveedores y sus datos de contacto.</p>
+                        <div class="d-flex flex-wrap">
+                            <a asp-controller="Proveedor" asp-action="Create" class="btn btn-success mr-2 mb-2">➕ Nuevo proveedor</a>
+                            <a asp-controller="Proveedor" asp-action="Index" class="btn btn-outline-success mb-2">👥 Ver proveedores</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- INVITADOS -->
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="card card-soft h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">¿Qué incluye el sistema?</h5>
+                        <ul class="mb-0 list-compact">
+                            <li>Registro de <strong>artículos</strong> con validaciones y códigos únicos.</li>
+                            <li>Gestión de <strong>categorías</strong> para organizar el inventario.</li>
+                            <li>Administración de <strong>proveedores</strong> y búsqueda rápida.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 mb-4">
+                <div class="card card-soft h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Primeros pasos</h5>
+                        <ol class="mb-2">
+                            <li>Inicia sesión o crea una cuenta de equipo.</li>
+                            <li>Configura categorías y proveedores.</li>
+                            <li>Registra tu primer artículo.</li>
+                        </ol>
+                        <div>
+                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary mr-2">Iniciar sesión</a>
+                            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-primary">Registrarme</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="text-muted small mt-3">
+        @DateTime.Now.Year © Inventario de Ferretería · Trabajo en equipo
+    </div>
 </div>
