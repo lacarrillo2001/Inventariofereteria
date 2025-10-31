@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace InFerreteria.Controllers
 {
+    
     public class ArticulosController : Controller
     {
         private readonly ArticulosSoapService _articulos;
@@ -214,6 +216,7 @@ namespace InFerreteria.Controllers
 
         // ================== ELIMINAR FÍSICO ==================
         [HttpPost]
+        
         public async Task<IActionResult> Delete(int id, string codigo)
         {
             codigo = codigo?.Trim();

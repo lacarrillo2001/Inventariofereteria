@@ -104,7 +104,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-white">
-                                <a asp-controller="Articulo" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver lista</a>
+                                <a asp-controller="Articulos" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver lista</a>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-white">
-                                <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-sm btn-outline-secondary">Revisar inactivos</a>
+                                <a asp-controller="Articulos" asp-action="Inactivos" class="btn btn-sm btn-outline-secondary">Revisar inactivos</a>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-white">
-                                <a asp-controller="Categoria" asp-action="Index" class="btn btn-sm btn-outline-info">Gestionar categorías</a>
+                                <a asp-controller="Categorias" asp-action="Index" class="btn btn-sm btn-outline-info">Gestionar categorías</a>
                             </div>
                         </div>
                     </div>
@@ -161,7 +161,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-white">
-                                <a asp-controller="Proveedor" asp-action="Index" class="btn btn-sm btn-outline-success">Ver proveedores</a>
+                                <a asp-controller="Proveedores" asp-action="Index" class="btn btn-sm btn-outline-success">Ver proveedores</a>
                             </div>
                         </div>
                     </div>
@@ -174,12 +174,12 @@
             <div class="card-body">
                 <h5 class="card-title mb-3">Acciones rápidas</h5>
                 <div class="d-flex flex-wrap">
-                    <a asp-controller="Articulo" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Artículos</a>
-                    <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-outline-secondary mr-2 mb-2">Artículos inactivos</a>
-                    <a asp-controller="Categoria" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Categorías</a>
-                    <a asp-controller="Proveedor" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Proveedores</a>
-                    <a asp-controller="Categoria" asp-action="Create" class="btn btn-outline-info mr-2 mb-2">➕ Nueva categoría</a>
-                    <a asp-controller="Proveedor" asp-action="Create" class="btn btn-outline-success mr-2 mb-2">➕ Nuevo proveedor</a>
+                    <a asp-controller="Articulos" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Artículos</a>
+                    <a asp-controller="Articulos" asp-action="Inactivos" class="btn btn-outline-secondary mr-2 mb-2">Artículos inactivos</a>
+                    <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Categorías</a>
+                    <a asp-controller="Proveedores" asp-action="Index" class="btn btn-outline-secondary mr-2 mb-2">Proveedores</a>
+                    <a asp-controller="Categorias" asp-action="Create" class="btn btn-outline-info mr-2 mb-2">➕ Nueva categoría</a>
+                    <a asp-controller="Proveedores" asp-action="Create" class="btn btn-outline-success mr-2 mb-2">➕ Nuevo proveedor</a>
                 </div>
             </div>
         </div>
@@ -193,9 +193,9 @@
                         <h5 class="card-title">Artículos</h5>
                         <p class="mb-3 text-muted">Registro, edición, búsqueda y control de stock mínimo.</p>
                         <div class="d-flex flex-wrap">
-                            <a asp-controller="Articulo" asp-action="Create" class="btn btn-primary mr-2 mb-2">➕ Nuevo artículo</a>
-                            <a asp-controller="Articulo" asp-action="Index" class="btn btn-outline-primary mr-2 mb-2">📦 Ver inventario</a>
-                            <a asp-controller="Articulo" asp-action="Inactivos" class="btn btn-outline-secondary mb-2">⏸️ Inactivos</a>
+                            <a asp-controller="Articulos" asp-action="Create" class="btn btn-primary mr-2 mb-2">➕ Nuevo artículo</a>
+                            <a asp-controller="Articulos" asp-action="Index" class="btn btn-outline-primary mr-2 mb-2">📦 Ver inventario</a>
+                            <a asp-controller="Articulos" asp-action="Inactivos" class="btn btn-outline-secondary mb-2">⏸️ Inactivos</a>
                         </div>
                     </div>
                 </div>
@@ -208,8 +208,8 @@
                         <h5 class="card-title">Categorías</h5>
                         <p class="mb-3 text-muted">Clasifica tus artículos y organiza el catálogo.</p>
                         <div class="d-flex flex-wrap">
-                            <a asp-controller="Categoria" asp-action="Create" class="btn btn-info mr-2 mb-2">➕ Nueva categoría</a>
-                            <a asp-controller="Categoria" asp-action="Index" class="btn btn-outline-info mb-2">📚 Ver categorías</a>
+                            <a asp-controller="Categorias" asp-action="Create" class="btn btn-info mr-2 mb-2">➕ Nueva categoría</a>
+                            <a asp-controller="Categorias" asp-action="Index" class="btn btn-outline-info mb-2">📚 Ver categorías</a>
                         </div>
                     </div>
                 </div>
@@ -222,8 +222,8 @@
                         <h5 class="card-title">Proveedores</h5>
                         <p class="mb-3 text-muted">Administra tus proveedores y sus datos de contacto.</p>
                         <div class="d-flex flex-wrap">
-                            <a asp-controller="Proveedor" asp-action="Create" class="btn btn-success mr-2 mb-2">➕ Nuevo proveedor</a>
-                            <a asp-controller="Proveedor" asp-action="Index" class="btn btn-outline-success mb-2">👥 Ver proveedores</a>
+                            <a asp-controller="Proveedores" asp-action="Create" class="btn btn-success mr-2 mb-2">➕ Nuevo proveedor</a>
+                            <a asp-controller="Proveedores" asp-action="Index" class="btn btn-outline-success mb-2">👥 Ver proveedores</a>
                         </div>
                     </div>
                 </div>
