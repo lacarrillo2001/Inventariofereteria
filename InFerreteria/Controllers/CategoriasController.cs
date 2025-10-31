@@ -10,12 +10,12 @@ namespace InFerreteria.Controllers
     public class CategoriasController : Controller
     {
         private readonly CategoriasSoapService _categorias;
-
-        public CategoriasController(CategoriasSoapService categorias)
+        private readonly ArticulosSoapService _articulos;
+        public CategoriasController(CategoriasSoapService categorias, ArticulosSoapService articulos)
         {
             _categorias = categorias;
+            _articulos = articulos;
         }
-
         // LISTAR
         public async Task<IActionResult> Index()
         {
@@ -131,13 +131,26 @@ namespace InFerreteria.Controllers
         }
 
         // ELIMINAR
+        // ELIMINAR
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            // 1) Verificar relación con Artículos
+            var articulos = await _articulos.ListarAsync();
+            var usados = articulos.Where(a => a.CategoriaId == id).ToList();
+            if (usados.Any())
+            {
+                TempData["Error"] = $"No se puede eliminar la categoría Id={id}: está asociada a {usados.Count} artículo(s). " +
+                                    $"Inactívela o reasigne los artículos antes de eliminar.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // 2) Eliminar si no hay relación
             var (ok, msg) = await _categorias.EliminarAsync(id);
-            TempData[ok ? "Success" : "Error"] = msg;
+            TempData[ok ? "Success" : "Error"] = ok ? "Categoría eliminada." : msg;
             return RedirectToAction(nameof(Index));
         }
+
     }
 
 

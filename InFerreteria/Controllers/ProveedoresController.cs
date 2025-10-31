@@ -9,10 +9,12 @@ namespace InFerreteria.Controllers
     public class ProveedoresController : Controller
     {
         private readonly ProveedoresSoapService _proveedores;
+        private readonly ArticulosSoapService _articulos;
 
-        public ProveedoresController(ProveedoresSoapService proveedores)
+        public ProveedoresController(ProveedoresSoapService proveedores, ArticulosSoapService articulos)
         {
             _proveedores = proveedores;
+            _articulos = articulos;
         }
 
         // LISTAR
@@ -136,9 +138,21 @@ namespace InFerreteria.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            // 1) Verificar relación con Artículos
+            var articulos = await _articulos.ListarAsync();
+            var usados = articulos.Where(a => a.ProveedorId == id).ToList();
+            if (usados.Any())
+            {
+                TempData["Error"] = $"No se puede eliminar el proveedor Id={id}: está asociado a {usados.Count} artículo(s). " +
+                                    $"Inactívelo o reasigne los artículos antes de eliminar.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // 2) Eliminar si no hay relación
             var (ok, msg) = await _proveedores.EliminarAsync(id);
-            TempData[ok ? "Success" : "Error"] = msg;
+            TempData[ok ? "Success" : "Error"] = ok ? "Proveedor eliminado." : msg;
             return RedirectToAction(nameof(Index));
         }
+
     }
 }
