@@ -46,10 +46,15 @@
 //app.Run();
 
 
+using Ferreteria.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
 using WebApp.Data;
+using WebApp.Services;
+using InFerreteria;                  // SoapEndpointsOptions
+using InFerreteria.Services;        // Articulos/Categorias/Proveedores
+using InFerreteria.Services.Soap;   // SoapClient
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,17 +67,19 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
+// Quita “Services.” al inicio. Pon el namespace real de tus clases:
+builder.Services.AddScoped<InFerreteria.Services.Soap.SoapClient>();
+builder.Services.AddScoped <InFerreteria.Services.ArticulosSoapService>();
+builder.Services.AddScoped<InFerreteria.Services.CategoriasSoapService>();
+builder.Services.AddScoped<InFerreteria.Services.ProveedoresSoapService>();
 
-// SOAP typed client
-builder.Services.AddHttpClient<WebApp.Services.IInventarioSoapClient, WebApp.Services.InventarioSoapClient>(c =>
-{
-    c.BaseAddress = new Uri("http://localhost:5090/ws/inventario.svc"); // tu SOAP real
-    c.DefaultRequestHeaders.Accept.Clear();
-    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
-});
+builder.Services.Configure<InFerreteria.SoapEndpointsOptions>(
+    builder.Configuration.GetSection("SoapEndpoints"));
 
 
 var app = builder.Build();
