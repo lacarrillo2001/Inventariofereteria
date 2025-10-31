@@ -60,6 +60,21 @@ namespace InFerreteria.Controllers
                 Descripcion = vm.Descripcion?.Trim()
             };
 
+            var cats = await _categorias.ListarAsync();
+            var provs = await _proveedores.ListarAsync();
+
+            if (!cats.Any(c => c.Id == vm.CategoriaId && c.Activo))
+                ModelState.AddModelError(nameof(vm.CategoriaId), "Seleccione una categoría activa.");
+
+            if (!provs.Any(p => p.Id == vm.ProveedorId && p.Activo))
+                ModelState.AddModelError(nameof(vm.ProveedorId), "Seleccione un proveedor activo.");
+
+            if (!ModelState.IsValid)
+            {
+                await CargarCombos(vm);
+                return View(vm);
+            }
+
             var (ok, message, code) = await _articulos.InsertarAsync(dto);
 
             if (ok)
@@ -142,6 +157,22 @@ namespace InFerreteria.Controllers
                 await CargarCombos(vm);
                 return View(vm);
             }
+
+            var cats = await _categorias.ListarAsync();
+            var provs = await _proveedores.ListarAsync();
+
+            if (!cats.Any(c => c.Id == vm.CategoriaId && c.Activo))
+                ModelState.AddModelError(nameof(vm.CategoriaId), "La categoría seleccionada no está activa.");
+
+            if (!provs.Any(p => p.Id == vm.ProveedorId && p.Activo))
+                ModelState.AddModelError(nameof(vm.ProveedorId), "El proveedor seleccionado no está activo.");
+
+            if (!ModelState.IsValid)
+            {
+                await CargarCombos(vm);
+                return View(vm);
+            }
+
 
             var (ok, msg) = await _articulos.ActualizarAsync(vm);
             if (ok)
@@ -234,28 +265,30 @@ namespace InFerreteria.Controllers
         }
 
 
-        // Overload para CreateVm
+        // CreateVm
         private async Task CargarCombos(ArticuloCreateVm vm)
-                {
-                    var cats = await _categorias.ListarAsync();
-                 vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
+        {
+            var cats = await _categorias.ListarAsync();
+            var provs = await _proveedores.ListarAsync();
 
+            var catsActivos = cats.Where(c => c.Activo).OrderBy(c => c.Nombre).ToList();
+            var provsActivos = provs.Where(p => p.Activo).OrderBy(p => p.Nombre).ToList();
 
-        
-                var provs = await _proveedores.ListarAsync();
-                    vm.Proveedores = provs.Select(p => new SelectItemVm { Id = p.id, Texto = p.nombre }).ToList();
-                }
+            vm.Categorias = catsActivos.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
+            vm.Proveedores = provsActivos.Select(p => new SelectItemVm { Id = p.Id, Texto = p.Nombre }).ToList();
+        }
 
-
-        // Combos
+        // EditVm
         private async Task CargarCombos(ArticuloEditVm vm)
         {
             var cats = await _categorias.ListarAsync();
-            vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
-
-
             var provs = await _proveedores.ListarAsync();
-            vm.Proveedores = provs.Select(p => new SelectItemVm { Id = p.id, Texto = p.nombre }).ToList();
+
+            var catsActivos = cats.Where(c => c.Activo).OrderBy(c => c.Nombre).ToList();
+            var provsActivos = provs.Where(p => p.Activo).OrderBy(p => p.Nombre).ToList();
+
+            vm.Categorias = catsActivos.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
+            vm.Proveedores = provsActivos.Select(p => new SelectItemVm { Id = p.Id, Texto = p.Nombre }).ToList();
         }
     }
 }

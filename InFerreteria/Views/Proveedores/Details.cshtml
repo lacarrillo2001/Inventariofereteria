@@ -1,0 +1,24 @@
+﻿@model InFerreteria.Models.ProveedorDto
+@{
+    ViewData["Title"] = "Detalle de Proveedor";
+}
+<div class="container mt-4">
+    <h3>Detalle de Proveedor</h3>
+    <dl class="row">
+        <dt class="col-sm-3">Id</dt>
+        <dd class="col-sm-9">@Model.Id</dd>
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+        <dt class="col-sm-3">Contacto</dt>
+        <dd class="col-sm-9">@Model.Contacto</dd>
+        <dt class="col-sm-3">RUC</dt>
+        <dd class="col-sm-9">@Model.Ruc</dd>
+        <dt class="col-sm-3">Correo</dt>
+        <dd class="col-sm-9">@Model.Correo</dd>
+        <dt class="col-sm-3">Dirección</dt>
+        <dd class="col-sm-9">@Model.Direccion</dd>
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@(Model.Activo ? "Activo" : "Inactivo")</dd>
+    </dl>
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+</div>
