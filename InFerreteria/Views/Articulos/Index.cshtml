@@ -17,14 +17,14 @@
 
     <p>
 
-        <a asp-action="Create" class="btn btn-sm btn-warning">Editar</a>
+        <a asp-action="Inactivos" class="btn btn-outline-secondary">Ver inactivas</a>
         <a asp-controller="Articulos" asp-action="Create" class="btn btn-primary">Nuevo Artículo</a>
     </p>
 
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>Id</th>
+               
                 <th>Código</th>
                 <th>Nombre</th>
                 <th>Precio</th>
@@ -34,51 +34,33 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var a in Model)
+            @foreach (var a in (Model ?? Enumerable.Empty<InFerreteria.Models.ArticuloDto>())
+                        .Where(x => x.Activo))
             {
                 <tr>
-                    <td>@a.Id</td>
                     <td>@a.Codigo</td>
                     <td>@a.Nombre</td>
                     <td>@a.PrecioVenta</td>
                     <td>@a.Stock</td>
-                    <td>
-                        @if (a.Activo)
-                        {
-                            <span class="badge bg-success">Activo</span>
-                        }
-                        else
-                        {
-
-                            <span class="badge bg-secondary">Inactivo</span>
-                        }
-                    </td>
+                    <td><span class="badge bg-success">Activo</span></td>
                     <td>
                         <a asp-action="Details" asp-route-codigo="@a.Codigo" class="btn btn-sm btn-outline-info">Detalles</a>
                         <a asp-action="Edit" asp-route-codigo="@a.Codigo" class="btn btn-sm btn-warning">Editar</a>
-
-                        @if (a.Activo)
-                        {
-                            <form asp-action="Inactivar" method="post" class="d-inline">
-                                <input type="hidden" name="codigo" value="@a.Codigo" />
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">Inactivar</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <form asp-action="Activar" method="post" class="d-inline">
-                                <input type="hidden" name="codigo" value="@a.Codigo" />
-                                <button type="submit" class="btn btn-sm btn-outline-success">Activar</button>
-                            </form>
-                        }
-
-                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar definitivamente?');">
-                            <input type="hidden" name="id" value="@a.Id" />
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        <form asp-action="Inactivar" method="post" class="d-inline">
+                            <input type="hidden" name="codigo" value="@a.Codigo" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Eliminar</button>
                         </form>
                     </td>
                 </tr>
             }
+
+            @if (!(Model?.Any(m => m.Activo) ?? false))
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No hay artículos activos.</td>
+                </tr>
+            }
+
         </tbody>
     </table>
 </div>

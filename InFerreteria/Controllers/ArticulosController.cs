@@ -37,6 +37,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== CREATE (POST) ==================
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ArticuloCreateVm vm)
@@ -111,6 +112,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== LISTAR ==================
+        [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> Index()
         {
             var data = await _articulos.ListarAsync();
@@ -118,6 +120,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== EDIT (GET) por código ==================
+        [Authorize(Roles = "admin,user")]
         [HttpGet]
         public async Task<IActionResult> Edit(string codigo)
         {
@@ -149,6 +152,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== EDIT (POST) ==================
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ArticuloEditVm vm)
@@ -198,6 +202,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== INACTIVAR ==================
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         public async Task<IActionResult> Inactivar(string codigo)
         {
@@ -207,6 +212,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== ACTIVAR ==================
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Activar(string codigo)
         {
@@ -217,6 +223,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== ELIMINAR FÍSICO ==================
+        [Authorize(Roles = "admin")]
         [HttpPost]
         
         public async Task<IActionResult> Delete(int id, string codigo)
@@ -261,6 +268,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== LISTAR INACTIVOS ==================
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> Inactivos()
         {

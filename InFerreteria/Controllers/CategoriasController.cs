@@ -4,6 +4,8 @@ using InFerreteria.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace InFerreteria.Controllers
 {
@@ -17,6 +19,7 @@ namespace InFerreteria.Controllers
             _articulos = articulos;
         }
         // LISTAR
+        [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> Index()
         {
             var data = await _categorias.ListarAsync();
@@ -24,6 +27,7 @@ namespace InFerreteria.Controllers
         }
 
         // INACTIVOS
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> Inactivos()
         {
@@ -32,6 +36,7 @@ namespace InFerreteria.Controllers
         }
 
         // DETAILS
+        [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> Details(int id)
         {
             var dto = await _categorias.ConsultarPorIdAsync(id);
@@ -44,10 +49,12 @@ namespace InFerreteria.Controllers
         }
 
         // CREATE GET
+        [Authorize(Roles = "admin,user")]
         [HttpGet]
         public IActionResult Create() => View(new CategoriaCreateVm());
 
         // CREATE POST
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoriaCreateVm vm)
@@ -70,6 +77,7 @@ namespace InFerreteria.Controllers
         }
 
         // EDIT GET
+        [Authorize(Roles = "admin,user")]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -91,6 +99,7 @@ namespace InFerreteria.Controllers
         }
 
         // EDIT POST
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CategoriaEditVm vm)
@@ -113,6 +122,7 @@ namespace InFerreteria.Controllers
         }
 
         // ACTIVAR
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Activar(int id)
         {
@@ -122,6 +132,7 @@ namespace InFerreteria.Controllers
         }
 
         // INACTIVAR
+        [Authorize(Roles = "admin,user")]
         [HttpPost]
         public async Task<IActionResult> Inactivar(int id)
         {
@@ -130,8 +141,9 @@ namespace InFerreteria.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
         // ELIMINAR
-        // ELIMINAR
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
