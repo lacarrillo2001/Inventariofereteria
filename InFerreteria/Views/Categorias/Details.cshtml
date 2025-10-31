@@ -1,0 +1,18 @@
+﻿@model InFerreteria.Models.CategoriaDto
+@{
+    ViewData["Title"] = "Detalle de Categoría";
+}
+<div class="container mt-4">
+    <h3>Detalle de Categoría</h3>
+    <dl class="row">
+        <dt class="col-sm-3">Id</dt>
+        <dd class="col-sm-9">@Model.Id</dd>
+        <dt class="col-sm-3">Nombre</dt>
+        <dd class="col-sm-9">@Model.Nombre</dd>
+        <dt class="col-sm-3">Descripción</dt>
+        <dd class="col-sm-9">@Model.Descripcion</dd>
+        <dt class="col-sm-3">Estado</dt>
+        <dd class="col-sm-9">@(Model.Activo ? "Activa" : "Inactiva")</dd>
+    </dl>
+    <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+</div>

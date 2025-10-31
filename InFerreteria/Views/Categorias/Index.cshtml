@@ -1,0 +1,69 @@
+﻿@model IEnumerable<InFerreteria.Models.CategoriaDto>
+@{
+    ViewData["Title"] = "Categorías";
+}
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-3">
+        <h3 class="mb-0 me-3">Categorías</h3>
+        <div class="ms-auto d-flex gap-2">
+            <a asp-action="Create" class="btn btn-primary">Nueva</a>
+            <a asp-action="Inactivos" class="btn btn-outline-secondary">Ver inactivas</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th style="width:240px">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.Id</td>
+                    <td>@c.Nombre</td>
+                    <td>@c.Descripcion</td>
+                    <td>@(c.Activo? Html.Raw("<span class='badge bg-success'>Activa</span>") : Html.Raw("<span class='badge bg-secondary'>Inactiva</span>"))</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-info">Detalles</a>
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-warning">Editar</a>
+
+                        @if (c.Activo)
+                        {
+                            <form asp-action="Inactivar" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@c.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Inactivar</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Activar" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@c.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-success">Activar</button>
+                            </form>
+                        }
+
+                        <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar definitivamente?');">
+                            <input type="hidden" name="id" value="@c.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

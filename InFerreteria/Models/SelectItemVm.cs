@@ -1,4 +1,4 @@
-﻿namespace Ferreteria.Web.Models
+﻿namespace InFerreteria.Models
 {
     public class SelectItemVm
     {

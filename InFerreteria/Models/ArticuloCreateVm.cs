@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using InFerreteria.Models;
+
 
 
 namespace Ferreteria.Web.Models

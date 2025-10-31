@@ -238,9 +238,11 @@ namespace InFerreteria.Controllers
         private async Task CargarCombos(ArticuloCreateVm vm)
                 {
                     var cats = await _categorias.ListarAsync();
-                    vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.id, Texto = c.nombre }).ToList();
+                 vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
 
-                    var provs = await _proveedores.ListarAsync();
+
+        
+                var provs = await _proveedores.ListarAsync();
                     vm.Proveedores = provs.Select(p => new SelectItemVm { Id = p.id, Texto = p.nombre }).ToList();
                 }
 
@@ -249,7 +251,8 @@ namespace InFerreteria.Controllers
         private async Task CargarCombos(ArticuloEditVm vm)
         {
             var cats = await _categorias.ListarAsync();
-            vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.id, Texto = c.nombre }).ToList();
+            vm.Categorias = cats.Select(c => new SelectItemVm { Id = c.Id, Texto = c.Nombre }).ToList();
+
 
             var provs = await _proveedores.ListarAsync();
             vm.Proveedores = provs.Select(p => new SelectItemVm { Id = p.id, Texto = p.nombre }).ToList();
