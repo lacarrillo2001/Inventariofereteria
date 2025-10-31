@@ -48,9 +48,9 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 using WebApp.Data;
-using WebApp.Infra.Middleware;
-using WebApp.Infra.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,9 +65,14 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
-// en Program.cs (si ya tienes IHttpContextAccessor, solo agrega esto)
 
-builder.Services.AddScoped<IErrorLogger, ErrorLogger>();
+// SOAP typed client
+builder.Services.AddHttpClient<WebApp.Services.IInventarioSoapClient, WebApp.Services.InventarioSoapClient>(c =>
+{
+    c.BaseAddress = new Uri("http://localhost:5090/ws/inventario.svc"); // tu SOAP real
+    c.DefaultRequestHeaders.Accept.Clear();
+    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+});
 
 
 var app = builder.Build();
@@ -77,7 +82,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     //db.Database.Migrate();
 }
-app.UseMiddleware<ExceptionDbLoggerMiddleware>(); // WebApp.Infra.Middleware
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

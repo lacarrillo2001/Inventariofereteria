@@ -74,80 +74,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;                          // (opcional si luego auditas por usuario)
 using System.Threading;
 using System.Threading.Tasks;
-using WebApp.Data.Inventario.Entities;
+
 
 namespace WebApp.Data
 {
     // 👇 Cambiamos DbContext -> IdentityDbContext para que ASP.NET Core Identity se configure solo
     public class ApplicationDbContext : IdentityDbContext
     {
-        public DbSet<Categoria> Categorias => Set<Categoria>();
-        public DbSet<Proveedor> Proveedores => Set<Proveedor>();
-        public DbSet<Articulo> Articulos => Set<Articulo>();
+     
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-        public DbSet<WebApp.Data.Infra.Entities.ErrorLog> ErrorLogs => Set<WebApp.Data.Infra.Entities.ErrorLog>();
+        
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // ⚠️ Importante para que Identity cree sus tablas/índices por defecto
-            base.OnModelCreating(modelBuilder);
-
-            // Aplica TODAS las configuraciones de la asamblea (Configurations/*)
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-            // Mapea ErrorLog sin usar configuración aparte
-            modelBuilder.Entity<WebApp.Data.Infra.Entities.ErrorLog>(e =>
-            {
-                e.ToTable("error_log");
-                e.Property(p => p.Id).HasColumnName("id");
-                e.Property(p => p.Level).HasColumnName("level");
-                e.Property(p => p.Message).HasColumnName("message");
-                e.Property(p => p.StackTrace).HasColumnName("stack_trace");
-                e.Property(p => p.Controller).HasColumnName("controller");
-                e.Property(p => p.Action).HasColumnName("action");
-                e.Property(p => p.UserName).HasColumnName("user_name");
-                e.Property(p => p.Path).HasColumnName("path");
-                e.Property(p => p.QueryString).HasColumnName("query_string");
-                e.Property(p => p.FormJson).HasColumnName("form_json");
-                e.Property(p => p.CreatedAt).HasColumnName("created_at");
-            });
-        }
-
-        // Marca UpdatedAt automáticamente en insert/update
-        public override int SaveChanges()
-        {
-            TouchTimestamps();
-            return base.SaveChanges();
-        }
-
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            TouchTimestamps();
-            return base.SaveChangesAsync(cancellationToken);
-        }
-
-        private void TouchTimestamps()
-        {
-            var entries = ChangeTracker.Entries()
-                .Where(e => e.Entity is Categoria || e.Entity is Proveedor || e.Entity is Articulo);
-
-            var now = DateTime.UtcNow;
-            foreach (var entry in entries)
-            {
-                if (entry.State == EntityState.Added)
-                {
-                    entry.Property("CreatedAt").CurrentValue = now;
-                    entry.Property("UpdatedAt").CurrentValue = now;
-                }
-                else if (entry.State == EntityState.Modified)
-                {
-                    entry.Property("UpdatedAt").CurrentValue = now;
-                }
-            }
-        }
     }
 }

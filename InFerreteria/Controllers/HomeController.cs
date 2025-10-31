@@ -18,15 +18,7 @@ namespace InFerreteria.Controllers
 
         public IActionResult Index()
         {
-            if (User?.Identity?.IsAuthenticated == true)
-            {
-                ViewBag.ArticulosActivos = _db.Articulos.Count(a => a.Activo);
-                ViewBag.ArticulosInactivos = _db.Articulos.Count(a => !a.Activo);
-                ViewBag.Categorias = _db.Categorias.Count();
-                // Dentro de Index(), solo si está autenticado:
-                ViewBag.Proveedores = _db.Proveedores.Count();
 
-            }
             return View();
         }
 
