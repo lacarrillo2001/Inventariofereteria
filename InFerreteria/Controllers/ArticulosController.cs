@@ -4,6 +4,7 @@ using InFerreteria.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace InFerreteria.Controllers
@@ -26,6 +27,7 @@ namespace InFerreteria.Controllers
         }
 
         // ================== CREATE (GET) ==================
+        [Authorize(Roles = "admin,user")]
         [HttpGet]
         public async Task<IActionResult> Create()
         {
